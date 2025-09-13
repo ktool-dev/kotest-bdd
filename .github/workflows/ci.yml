@@ -7,11 +7,13 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-    name: Test and build new version
+  test:
+    name: Test on Ubuntu
     runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.tag_version.outputs.new_tag }}
     permissions:
-      contents: write
+      contents: read
       checks: write
 
     steps:
@@ -28,10 +30,10 @@ jobs:
       - name: Run Tests
         uses: gradle/gradle-build-action@937999e9cc2425eddc7fd62d1053baf041147db7
         with:
-          arguments: build
+          arguments: check
 
       - name: Test Report
-        if: success() || failure()
+        if: (success() || failure())
         uses: dorny/test-reporter@v1
         with:
           name: Unit Test Results
@@ -39,33 +41,77 @@ jobs:
           reporter: java-junit
 
       - name: Bump version and push tag
+        if: success()
         id: tag_version
         uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_prefix: ''
+
       - name: Create a GitHub release
+        if: success()
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+
+  build:
+    name: Build on ${{ matrix.os }}
+    needs: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            targets: "publishJvmPublicationToMavenCentralRepository publishLinuxX64PublicationToMavenCentralRepository publishLinuxArm64PublicationToMavenCentralRepository"
+          - os: macos-latest
+            targets: "publishIosX64PublicationToMavenCentralRepository publishIosArm64PublicationToMavenCentralRepository publishIosSimulatorArm64PublicationToMavenCentralRepository publishMacosX64PublicationToMavenCentralRepository publishMacosArm64PublicationToMavenCentralRepository"
+          - os: windows-latest
+            targets: "publishMingwX64PublicationToMavenCentralRepository"
+    permissions:
+      contents: write
+      checks: write
+
+    steps:
+      - uses: actions/checkout@v4
         with:
-          name: build-artifacts-${{ steps.tag_version.outputs.new_tag }}
-          path: |
-            build/libs/
-          retention-days: 30
+          fetch-depth: 0
+
+      - name: Set up JDK 22
+        uses: actions/setup-java@v3
+        with:
+          java-version: '22'
+          distribution: 'adopt'
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@e6e38bacfdf1a337459f332974bb2327a31aaf4b
 
       - name: Update version in build.gradle.kts
+        shell: bash
         run: |
-          sed -i 's/version\.set(".*")/version.set("${{ steps.tag_version.outputs.new_tag }}")/' build.gradle.kts
+          if [[ "${{ runner.os }}" == "macOS" ]]; then
+            sed -i '' 's/version\.set(".*")/version.set("${{ needs.test.outputs.new_tag }}")/' build.gradle.kts
+          else
+            sed -i 's/version\.set(".*")/version.set("${{ needs.test.outputs.new_tag }}")/' build.gradle.kts
+          fi
 
-      - name: Deploy to Maven Central
+      - name: Setup signing key
+        shell: bash
+        run: |
+          echo "${{ secrets.SIGNING_KEY }}" | base64 -d > signing.key
+          echo "SIGNING_KEY=$(cat signing.key)" >> $GITHUB_ENV
+
+      - name: Build targets for ${{ matrix.os }}
+        uses: gradle/gradle-build-action@937999e9cc2425eddc7fd62d1053baf041147db7
+        with:
+          arguments: ${{ matrix.targets }}
         env:
           CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           CENTRAL_PORTAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-        run: ./gradlew deployToCentralPortal
+
+      - name: Cleanup signing key
+        if: always()
+        shell: bash
+        run: rm -f signing.key

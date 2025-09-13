@@ -1,8 +1,7 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.deployer)
-    id("org.jetbrains.dokka") version "1.9.20"
-    `maven-publish`
+    alias(libs.plugins.dokka)
 }
 
 repositories {

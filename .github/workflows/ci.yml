@@ -62,11 +62,8 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            targets: "publishJvmPublicationToMavenCentralRepository publishLinuxX64PublicationToMavenCentralRepository publishLinuxArm64PublicationToMavenCentralRepository"
           - os: macos-latest
-            targets: "publishIosX64PublicationToMavenCentralRepository publishIosArm64PublicationToMavenCentralRepository publishIosSimulatorArm64PublicationToMavenCentralRepository publishMacosX64PublicationToMavenCentralRepository publishMacosArm64PublicationToMavenCentralRepository"
           - os: windows-latest
-            targets: "publishMingwX64PublicationToMavenCentralRepository"
     permissions:
       contents: write
       checks: write
@@ -95,7 +92,7 @@ jobs:
           fi
 
       - name: Build targets for ${{ matrix.os }}
-        run: ./gradlew ${{ matrix.targets }}
+        run: ./gradlew publish
         env:
           CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           CENTRAL_PORTAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}

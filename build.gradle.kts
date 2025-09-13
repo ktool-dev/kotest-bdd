@@ -75,14 +75,20 @@ deployer {
         kotlinComponents()
     }
 
+    val domain = "kotool.dev"
+    val gitHubOrg = domain.replace(".", "-")
+
     projectInfo {
-        groupId = "dev.kotool"
+        groupId = domain.split(".").reversed().joinToString(".")
         artifactId = project.name
         name = DeployerSettings.NAME
         description = DeployerSettings.DESCRIPTION
-        url = "https://github.com/kotool-dev/${project.name}"
+        url = "https://github.com/$gitHubOrg/${project.name}"
         license(apache2)
-        developer(DeployerSettings.DEV_NAME, DeployerSettings.DEV_EMAIL, "Kotool", "https://kotool.dev")
+        developer(DeployerSettings.DEV_NAME, DeployerSettings.DEV_EMAIL, "Kotool", "https://$domain")
+        scm {
+            fromGithub(gitHubOrg, project.name)
+        }
     }
 
     release {

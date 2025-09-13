@@ -51,7 +51,7 @@ kotlin {
 }
 
 val javadocJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.dokkaHtml, tasks.sourcesJar)
+    dependsOn(tasks.dokkaHtml)
     from(tasks.dokkaHtml.flatMap { it.outputDirectory })
     archiveClassifier.set("javadoc")
 }
@@ -60,6 +60,14 @@ publishing {
     publications.withType<MavenPublication> {
         artifact(javadocJar)
     }
+}
+
+tasks.withType<Sign>().configureEach {
+    dependsOn(javadocJar)
+}
+
+tasks.withType<PublishToMavenRepository>().configureEach {
+    dependsOn(tasks.withType<Sign>())
 }
 
 object DeployerSettings {

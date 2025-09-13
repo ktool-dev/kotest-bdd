@@ -55,7 +55,7 @@ object DeployerSettings {
     const val NAME = "Kotest BDD"
     const val DESCRIPTION = "Behavior Driven Development extensions for Kotest"
     const val DEV_NAME = "Aaron Freeman"
-    const val DEV_EMAIL = "aaron@freeman.zone"
+    const val DEV_EMAIL = "aaron@kotool.dev"
 }
 
 deployer {

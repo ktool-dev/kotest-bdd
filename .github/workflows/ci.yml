@@ -94,22 +94,13 @@ jobs:
             sed -i 's/version\.set(".*")/version.set("${{ needs.test.outputs.new_tag }}")/' build.gradle.kts
           fi
 
-      - name: Setup signing key
-        shell: bash
-        run: |
-          echo "${{ secrets.SIGNING_KEY }}" | base64 -d > signing.key
-          {
-            echo 'SIGNING_KEY<<EOF'
-            cat signing.key
-            echo 'EOF'
-          } >> $SIGNING_KEY
-
       - name: Build targets for ${{ matrix.os }}
         run: ./gradlew ${{ matrix.targets }}
         env:
           CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           CENTRAL_PORTAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
 
       - name: Cleanup signing key
         if: always()

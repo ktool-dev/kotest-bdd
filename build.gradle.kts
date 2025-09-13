@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.deployer)
+    id("org.jetbrains.dokka") version "1.9.20"
+    `maven-publish`
 }
 
 repositories {
@@ -26,8 +28,6 @@ kotlin {
     linuxArm64()
     mingwX64()
 
-
-
     applyDefaultHierarchyTemplate()
 
     sourceSets {
@@ -48,6 +48,18 @@ kotlin {
                 implementation(libs.kotlinReflect)
             }
         }
+    }
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+    dependsOn(tasks.dokkaHtml, tasks.sourcesJar)
+    from(tasks.dokkaHtml.flatMap { it.outputDirectory })
+    archiveClassifier.set("javadoc")
+}
+
+publishing {
+    publications.withType<MavenPublication> {
+        artifact(javadocJar)
     }
 }
 

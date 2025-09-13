@@ -62,8 +62,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
+            targets: "publishCentralPortalJvmComponentPublicationToCentralPortalStorageRepository publishCentralPortalLinuxX64ComponentPublicationToCentralPortalStorageRepository publishCentralPortalLinuxArm64ComponentPublicationToCentralPortalStorageRepository publishCentralPortalKotlinMultiplatformClonePublicationToCentralPortalStorageRepository"
           - os: macos-latest
+            targets: "publishCentralPortalIosX64ComponentPublicationToCentralPortalStorageRepository publishCentralPortalIosArm64ComponentPublicationToCentralPortalStorageRepository publishCentralPortalIosSimulatorArm64ComponentPublicationToCentralPortalStorageRepository publishCentralPortalMacosX64ComponentPublicationToCentralPortalStorageRepository publishCentralPortalMacosArm64ComponentPublicationToCentralPortalStorageRepository"
           - os: windows-latest
+            targets: "publishCentralPortalMingwX64ComponentPublicationToCentralPortalStorageRepository"
     permissions:
       contents: write
       checks: write
@@ -92,7 +95,7 @@ jobs:
           fi
 
       - name: Build targets for ${{ matrix.os }}
-        run: ./gradlew deployAll
+        run: ./gradlew ${{ matrix.targets }}
         env:
           CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           CENTRAL_PORTAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}

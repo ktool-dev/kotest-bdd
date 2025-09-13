@@ -23,7 +23,7 @@ and this style feels more natural.
 
 ```kotlin
 dependencies {
-    testImplementation("dev.kotool.kotest:kotest-bdd:VERSION")
+    testImplementation("dev.ktool:kotest-bdd:VERSION")
 }
 ```
 
@@ -36,7 +36,7 @@ Replace `VERSION` with the latest version from the [releases page](https://githu
 Create a test class extending `BddSpec`:
 
 ```kotlin
-import dev.kotool.kotest.BddSpec
+import dev.ktool.kotest.BddSpec
 import io.kotest.matchers.shouldBe
 
 class CalculatorSpec : BddSpec({

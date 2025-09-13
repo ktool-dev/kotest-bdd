@@ -1,4 +1,4 @@
-package dev.kotool.kotest
+package dev.ktool.kotest
 
 import io.kotest.matchers.shouldBe
 

@@ -66,7 +66,7 @@ object DeployerSettings {
     const val NAME = "Kotest BDD"
     const val DESCRIPTION = "Behavior Driven Development extensions for Kotest"
     const val DEV_NAME = "Aaron Freeman"
-    const val DEV_EMAIL = "aaron@kotool.dev"
+    const val DEV_EMAIL = "aaron@ktool.dev"
 }
 
 deployer {
@@ -74,7 +74,7 @@ deployer {
         kotlinComponents()
     }
 
-    val domain = "kotool.dev"
+    val domain = "ktool.dev"
     val gitHubOrg = domain.replace(".", "-")
 
     projectInfo {
@@ -84,7 +84,7 @@ deployer {
         description = DeployerSettings.DESCRIPTION
         url = "https://github.com/$gitHubOrg/${project.name}"
         license(apache2)
-        developer(DeployerSettings.DEV_NAME, DeployerSettings.DEV_EMAIL, "Kotool", "https://$domain")
+        developer(DeployerSettings.DEV_NAME, DeployerSettings.DEV_EMAIL, "ktool", "https://$domain")
         scm {
             fromGithub(gitHubOrg, project.name)
         }

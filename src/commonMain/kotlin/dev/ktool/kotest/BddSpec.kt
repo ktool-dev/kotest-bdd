@@ -1,4 +1,4 @@
-package dev.kotool.kotest
+package dev.ktool.kotest
 
 import io.kotest.common.runBlocking
 import io.kotest.core.names.TestName

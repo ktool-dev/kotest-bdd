@@ -58,7 +58,10 @@ val javadocJar by tasks.registering(Jar::class) {
 
 publishing {
     publications.withType<MavenPublication> {
-        artifact(javadocJar)
+        // Only add javadoc to publications that will actually be published
+        if (name.startsWith("centralPortal")) {
+            artifact(javadocJar)
+        }
     }
 }
 

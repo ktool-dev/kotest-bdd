@@ -25,4 +25,16 @@ class TestSpec : BddSpec({
         Then
         result shouldBe b
     }
+
+    "test rows where {1} * 10 = {2}"(
+        row(10, 100),
+        row(20, 200),
+        row(30, 300),
+    ) { (a, b) ->
+        When
+        val result = a * 10
+
+        Then
+        result shouldBe b
+    }
 })

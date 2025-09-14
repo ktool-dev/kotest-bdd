@@ -21,6 +21,8 @@ and this style feels more natural.
 
 ## Installation
 
+This package is published to Maven Central, so you can add it to your project as follows:
+
 ```kotlin
 dependencies {
     testImplementation("dev.ktool:kotest-bdd:VERSION")
@@ -28,6 +30,14 @@ dependencies {
 ```
 
 Replace `VERSION` with the latest version from the [releases page](https://github.com/kotlin-run/kotest-bdd/releases).
+
+## Kotest Compatibility
+
+Because of changes to Kotest, you have to use the correct major version corresponding to your version of Kotest.
+
+| Kotest Version | Kotest BDD Version |
+|----------------|--------------------|
+| 5.0.x - 5.9.x  | 1.x.x              |
 
 ## Usage
 

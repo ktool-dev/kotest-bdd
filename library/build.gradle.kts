@@ -8,7 +8,6 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.vanniktech.mavenPublish)
     alias(libs.plugins.dokka)
-    signing
 }
 
 kotlin {
@@ -82,16 +81,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
-    }
-}
-
-signing {
-    val signingKeyId = providers.environmentVariable("ORG_GRADLE_PROJECT_signingInMemoryKeyId")
-    val signingKey = providers.environmentVariable("ORG_GRADLE_PROJECT_signingInMemoryKey")
-    val signingPassword = providers.environmentVariable("ORG_GRADLE_PROJECT_signingInMemoryKeyPassword")
-    
-    if (signingKeyId.isPresent && signingKey.isPresent && signingPassword.isPresent) {
-        useInMemoryPgpKeys(signingKeyId.get(), signingKey.get(), signingPassword.get())
     }
 }
 

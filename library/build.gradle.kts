@@ -1,6 +1,4 @@
-import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -93,8 +91,6 @@ mavenPublishing {
     val version = "0.0.0"
     val projectUrl = "https://github.com/$gitHubOrg/${project.name}"
 
-    configure(AndroidSingleVariantLibrary(variant = "release", sourcesJar = true, publishJavadocJar = true))
-    configure(KotlinJvm(javadocJar = JavadocJar.Dokka("javadocJar"), sourcesJar = true))
     configure(
         KotlinMultiplatform(
             javadocJar = JavadocJar.Dokka("javadocJar"),

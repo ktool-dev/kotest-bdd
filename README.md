@@ -37,7 +37,8 @@ Because of changes to Kotest, you have to use the correct major version correspo
 
 | Kotest Version | Kotest BDD Version |
 |----------------|--------------------|
-| 5.0.x - 5.9.x  | 1.x.x              |
+| 5.x.x          | 1.x.x              |
+| 6.x.x          | 2.x.x              |
 
 ## Usage
 

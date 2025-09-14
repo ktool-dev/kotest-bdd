@@ -55,7 +55,7 @@ jobs:
           body: ${{ steps.tag_version.outputs.changelog }}
 
   deploy:
-    name: Build and Test
+    name: Deploy
     needs: build
     runs-on: ubuntu-latest
     permissions:

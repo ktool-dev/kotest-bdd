@@ -10,8 +10,6 @@ jobs:
   test:
     name: Test on Ubuntu
     runs-on: ubuntu-latest
-    outputs:
-      new_tag: ${{ steps.tag_version.outputs.new_tag }}
     permissions:
       contents: write
       checks: write
@@ -54,47 +52,20 @@ jobs:
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
 
-  build:
-    name: Build on ${{ matrix.os }}
-    needs: test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-          - os: macos-latest
-          - os: windows-latest
-    permissions:
-      contents: write
-      checks: write
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up JDK 22
-        uses: actions/setup-java@v3
-        with:
-          java-version: '22'
-          distribution: 'adopt'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
       - name: Update version in build.gradle.kts
         shell: bash
         run: |
           if [[ "${{ runner.os }}" == "macOS" ]]; then
-            sed -i '' 's/val version = ".*"/val version = "${{ needs.test.outputs.new_tag }}"/' library/build.gradle.kts
+            sed -i '' 's/val version = ".*"/val version = "${{ steps.tag_version.outputs.new_tag }}"/' library/build.gradle.kts
           else
-            sed -i 's/val version = ".*"/val version = "${{ needs.test.outputs.new_tag }}"/' library/build.gradle.kts
+            sed -i 's/val version = ".*"/val version = "${{ steps.tag_version.outputs.new_tag }}"/' library/build.gradle.kts
           fi
 
-      - name: Build targets for ${{ matrix.os }}
-        run: ./gradlew library:publishToMavenCentral
+      - name: Publish to Maven Central
+        run: ./gradlew library:publishToMavenCentral --no-configuration-cache
         env:
-          CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
-          CENTRAL_PORTAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
-          SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_KEY }}

@@ -48,7 +48,7 @@ jobs:
           default_bump: false
 
       - name: Create a GitHub release
-        if: success()
+        if: success() && steps.tag_version.outputs.new_tag != ''
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.tag_version.outputs.new_tag }}
@@ -58,6 +58,7 @@ jobs:
   deploy:
     name: Deploy
     needs: build
+    if: needs.build.outputs.new_tag != ''
     runs-on: ubuntu-latest
     permissions:
       contents: write

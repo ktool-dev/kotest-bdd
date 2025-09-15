@@ -99,7 +99,7 @@ mavenPublishing {
         )
     )
 
-    publishToMavenCentral(automaticRelease = true)
+    publishToMavenCentral()
 
     signAllPublications()
 

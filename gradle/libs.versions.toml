@@ -1,5 +1,5 @@
 [versions]
-kotest = "6.0.3"
+kotest = "5.9.1"
 dokka = "1.9.20"
 agp = "8.10.1"
 kotlin = "2.2.20"

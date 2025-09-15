@@ -1,13 +1,14 @@
 package dev.ktool.kotest
 
+import io.kotest.common.runBlocking
 import io.kotest.core.names.TestName
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.core.spec.style.scopes.StringSpecRootScope
 import io.kotest.core.spec.style.scopes.StringSpecScope
+import io.kotest.core.spec.style.scopes.addContainer
 import io.kotest.core.spec.style.scopes.addTest
 import io.kotest.core.test.TestCase
 import io.kotest.core.test.TestScope
-import kotlinx.coroutines.runBlocking
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 
@@ -44,11 +45,7 @@ interface BddSpecRootScope : StringSpecRootScope {
      * Adds a String Spec test using the default test case config.
      */
     override operator fun String.invoke(test: suspend StringSpecScope.() -> Unit) {
-        addTest(
-            TestName(focus = false, bang = false, prefix = null, name = this, suffix = null, defaultAffixes = true),
-            false,
-            null
-        ) {
+        addTest(TestName(null, this, false), false, null) {
             callTest(this, testCase, test)
         }
     }
@@ -62,41 +59,34 @@ interface BddSpecRootScope : StringSpecRootScope {
 
     operator fun <T : ToValueList> String.invoke(vararg a: T, test: suspend StringSpecScope.(T) -> Unit) {
         val testTemplate = this
-        a.forEach { data ->
-            val values = data.toValueList().map {
-                when (it) {
-                    null -> "null"
-                    "" -> "\"\""
-                    is KClass<*> -> it.simpleName ?: it.toString()
-                    is KFunction<*> -> it.name
-                    else -> it.toString()
+        addContainer(TestName(null, testTemplate, false), false, null) {
+            a.map { data ->
+                val values = data.toValueList().map {
+                    when (it) {
+                        null -> "null"
+                        "" -> "\"\""
+                        is KClass<*> -> it.simpleName ?: it.toString()
+                        is KFunction<*> -> it.name
+                        else -> it.toString()
+                    }
                 }
-            }
-            var injectedValues = false
-            var name = Regex("""\{(?!\d+})(.*?)}""").replace(testTemplate, "{}")
-            values.forEachIndexed { i, v ->
-                if (name.contains("{${i + 1}")) {
-                    injectedValues = true
-                    name = name.replace("{${i + 1}}", v)
-                } else if (name.contains("{}")) {
-                    injectedValues = true
-                    name = name.replaceFirst("{}", v)
+                var injectedValues = false
+                var name = Regex("""\{(?!\d+})(.*?)}""").replace(testTemplate, "{}")
+                values.forEachIndexed { i, v ->
+                    if (name.contains("{${i + 1}")) {
+                        injectedValues = true
+                        name = name.replace("{${i + 1}}", v)
+                    } else if (name.contains("{}")) {
+                        injectedValues = true
+                        name = name.replaceFirst("{}", v)
+                    }
                 }
-            }
-            if (!injectedValues) {
-                name += values
-            }
-            addTest(
-                TestName(
-                    focus = false,
-                    bang = false,
-                    prefix = null,
-                    name = name,
-                    suffix = null,
-                    defaultAffixes = true
-                ), false, null
-            ) {
-                callTest(this, testCase) { test(data) }
+                if (!injectedValues) {
+                    name += values
+                }
+                registerTest(TestName(null, name, false), false, null) {
+                    callTest(this, testCase) { test(data) }
+                }
             }
         }
     }

@@ -3,8 +3,8 @@
 A Kotlin Multiplatform library that provides Behavior Driven Development (BDD) extensions
 for [Kotest](https://kotest.io/). Write expressive tests using Given/When/Then or Expect syntax across JVM, iOS, macOS,
 Linux, and Windows platforms. Though it is true Kotest has
-a [BehaviorSpec](https://kotest.io/docs/framework/testing-styles.html#behavior-spec), they are kind of nasty to read,
-and this style feels more natural.
+a [BehaviorSpec](https://kotest.io/docs/framework/testing-styles.html#behavior-spec), they are kind of hard to read with
+lots of nexting. This is a simple setup that just allows you to label each section of your test.
 
 ## Features
 

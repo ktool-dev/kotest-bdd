@@ -56,24 +56,16 @@ kotlin {
     }
 }
 
-object DeployConfig {
-    const val ARTIFACT = "kotest-bdd"
-    const val NAME = "Kotest BDD"
-    const val DESCRIPTION = "Behavior Driven Development extensions for Kotest"
-    const val INCEPTION_YEAR = "2025"
-    const val DEV_ID = "aaronfreeman"
-    const val DEV_NAME = "Aaron Freeman"
-    const val DEV_EMAIL = "aaron@ktool.dev"
-}
+description = "Simple Behavior Driven Development extensions for Kotest"
 
 val javadocJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.dokkaHtml)
-    from(tasks.dokkaHtml.flatMap { it.outputDirectory })
+    dependsOn(tasks.dokkaGeneratePublicationHtml)
+    from(tasks.dokkaGeneratePublicationHtml.flatMap { it.outputDirectory })
     archiveClassifier.set("javadoc")
 }
 
 android {
-    namespace = "dev.ktool.${DeployConfig.ARTIFACT.replace("-", "")}"
+    namespace = "dev.ktool.${project.name.replace("-", "")}"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -85,17 +77,16 @@ android {
 }
 
 mavenPublishing {
-    val domain = "ktool.dev"
-    val gitHubOrg = domain.replace(".", "-")
-    val groupId = domain.split(".").reversed().joinToString(".")
-    val version = "0.0.0"
-    val projectUrl = "https://github.com/$gitHubOrg/${project.name}"
+    val rootName = rootProject.name
+    val orgUrl = project.property("scm.org.url") as String
+    val artifactId = "$rootName-${project.name}"
+    val repoPath = project.property("scm.repo.path") as String
+    val projectUrl = "https://$repoPath"
 
     configure(
         KotlinMultiplatform(
             javadocJar = JavadocJar.Dokka("javadocJar"),
             sourcesJar = true,
-            androidVariantsToPublish = listOf("release"),
         )
     )
 
@@ -103,32 +94,32 @@ mavenPublishing {
 
     signAllPublications()
 
-    coordinates(groupId, DeployConfig.ARTIFACT, version)
+    coordinates(project.group.toString(), artifactId, project.version.toString())
 
     pom {
-        name = DeployConfig.NAME
-        description = DeployConfig.DESCRIPTION
-        inceptionYear = DeployConfig.INCEPTION_YEAR
+        name = artifactId
+        description = project.description
+        inceptionYear = project.property("inception.year") as String
         url = projectUrl
         licenses {
             license {
-                name = "The Apache License, Version 2.0"
-                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                name = project.property("license.name") as String
+                url = project.property("license.url") as String
+                distribution = project.property("license.url") as String
             }
         }
         developers {
             developer {
-                id = DeployConfig.DEV_ID
-                name = DeployConfig.DEV_NAME
-                email = DeployConfig.DEV_EMAIL
-                url = "https://github.com/${DeployConfig.DEV_ID}"
+                id = project.property("developer.id") as String
+                name = project.property("developer.name") as String
+                email = project.property("developer.email") as String
+                url = orgUrl
             }
         }
         scm {
-            url = "https://github.com/$gitHubOrg/$groupId/"
-            connection = "scm:git:git://github.com/$gitHubOrg/$groupId.git"
-            developerConnection = "scm:git:ssh://git@github.com/$gitHubOrg/$groupId.git"
+            url = projectUrl
+            connection = "scm:git:git://$repoPath.git"
+            developerConnection = "scm:git:ssh://git@$repoPath.git"
         }
     }
 }

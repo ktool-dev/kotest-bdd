@@ -78,13 +78,13 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Update version in build.gradle.kts
+      - name: Update version in gradle.properties
         shell: bash
         run: |
           if [[ "${{ runner.os }}" == "macOS" ]]; then
-            sed -i '' 's/val version = ".*"/val version = "${{ needs.build.outputs.new_tag }}"/' library/build.gradle.kts
+            sed -i '' 's/version=.*/version=${{ needs.build.outputs.new_tag }}/' gradle.properties
           else
-            sed -i 's/val version = ".*"/val version = "${{ needs.build.outputs.new_tag }}"/' library/build.gradle.kts
+            sed -i 's/version=.*/version=${{ needs.build.outputs.new_tag }}/' gradle.properties
           fi
 
       - name: Publish to Maven Central

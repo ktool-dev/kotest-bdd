@@ -4,7 +4,10 @@ import io.kotest.core.spec.style.StringSpec
 import io.kotest.core.test.TestCase
 import io.kotest.engine.runBlocking
 
-abstract class BddSpec(body: suspend BddSpec.() -> Unit = {}) : StringSpec(), BddSpecRootScope {
+abstract class BddSpec(override val enforceOrder: Boolean, body: suspend BddSpec.() -> Unit = {}) : StringSpec(),
+    BddSpecRootScope {
+    constructor(body: suspend BddSpec.() -> Unit = {}) : this(true, body)
+
     final override val bddSpecCallState = BddSpecCallState()
 
     init {

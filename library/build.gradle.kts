@@ -87,9 +87,8 @@ android {
 }
 
 mavenPublishing {
-    val rootName = rootProject.name
+    val artifactId = rootProject.name
     val orgUrl = project.property("scm.org.url") as String
-    val artifactId = "$rootName-${project.name}"
     val repoPath = project.property("scm.repo.path") as String
     val projectUrl = "https://$repoPath"
 

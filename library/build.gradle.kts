@@ -12,6 +12,9 @@ plugins {
 
 kotlin {
     jvm {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
         testRuns.named("test") {
             executionTask.configure {
                 useJUnitPlatform()

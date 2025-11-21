@@ -49,22 +49,17 @@ kotlin {
     applyDefaultHierarchyTemplate()
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(libs.kotest.framework.engine)
-            }
+        commonMain.dependencies {
+            implementation(libs.kotest.framework.engine)
+            implementation(libs.kotlinx.coroutines.test)
         }
-        val commonTest by getting {
-            dependencies {
-                implementation(libs.kotest.framework.engine)
-            }
+        commonTest.dependencies {
+            implementation(libs.kotest.framework.engine)
         }
-        val jvmMain by getting {
-            dependencies {
-                implementation(libs.kotest.runner.junit5)
-                implementation(libs.kotest.assertions.core)
-                implementation(libs.kotlinReflect)
-            }
+        jvmMain.dependencies {
+            implementation(libs.kotest.runner.junit5)
+            implementation(libs.kotest.assertions.core)
+            implementation(libs.kotlinReflect)
         }
     }
 }
